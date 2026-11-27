@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ServerVerse – 3D Server Library</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f3f6fb;--surf:#fff;--tx:#0d1b2e;--mut:#5a6b82;--ac:#0a84ff;--ac2:#7c3aed;--bd:#d9e1ee;--glow:rgba(10,132,255,.25)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070b14;--surf:#101829;--tx:#e8eefb;--mut:#8fa1bd;--ac:#38a1ff;--ac2:#a78bfa;--bd:#1f2c45;--glow:rgba(56,161,255,.3);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#070b14;--surf:#101829;--tx:#e8eefb;--mut:#8fa1bd;--ac:#38a1ff;--ac2:#a78bfa;--bd:#1f2c45;--glow:rgba(56,161,255,.3);color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:18px;padding:12px 5vw;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:20px}.logo b{color:var(--ac)}
+nav{display:flex;gap:18px;margin-left:auto;font-size:14px;color:var(--mut)}nav a:hover{color:var(--ac)}
+#tg{border:1px solid var(--bd);background:var(--surf);color:var(--tx);border-radius:10px;padding:6px 10px;cursor:pointer}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center;min-height:82vh;padding:40px 5vw;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:-20% -10% auto auto;width:60vw;height:60vw;background:radial-gradient(circle,var(--glow),transparent 60%);z-index:0}
+.hero>*{position:relative;z-index:1}
+h1{font-size:clamp(34px,5.5vw,64px);line-height:1.05;letter-spacing:-.03em;margin:0 0 16px}
+h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mut);max-width:520px;font-size:18px}
+.btns{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:12px 22px;border-radius:12px;font-weight:600;border:1px solid var(--bd);background:var(--surf);transition:.25s}
+.btn.p{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0;box-shadow:0 10px 30px var(--glow)}
+.btn:hover{transform:translateY(-3px)}
+.stats{display:flex;gap:28px;margin-top:30px;color:var(--mut);font-size:14px}.stats b{display:block;font-size:24px;color:var(--tx)}
+.scene{perspective:1100px;height:420px;display:grid;place-items:center}
+.rack{width:200px;height:300px;position:relative;transform-style:preserve-3d;animation:spin 18s linear infinite}
+.scene:hover .rack{animation-play-state:paused}
+@keyframes spin{to{transform:rotateX(-14deg) rotateY(360deg)}}
+.rack{transform:rotateX(-14deg)}
+.face{position:absolute;inset:0;border:1px solid var(--ac);border-radius:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--surf) 90%,var(--ac)),var(--surf));box-shadow:0 0 30px var(--glow) inset;display:flex;flex-direction:column;gap:9px;padding:14px}
+.f1{transform:translateZ(100px)}.f2{transform:rotateY(180deg) translateZ(100px)}.f3{transform:rotateY(90deg) translateZ(100px)}.f4{transform:rotateY(-90deg) translateZ(100px)}
+.u{flex:1;border-radius:6px;background:color-mix(in srgb,var(--bd) 70%,transparent);display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:0 10px}
+.u i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;animation:bl 1.6s infinite}.u i:nth-child(2){background:var(--ac);box-shadow:0 0 8px var(--ac);animation-delay:.5s}
+@keyframes bl{50%{opacity:.2}}
+section{padding:70px 5vw}
+h2{font-size:clamp(26px,3.5vw,40px);letter-spacing:-.02em;margin:0 0 8px}.sub{color:var(--mut);margin:0 0 30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;perspective:1000px}
+.card{background:var(--surf);border:1px solid var(--bd);border-radius:16px;padding:20px;transition:transform .15s,box-shadow .3s;transform-style:preserve-3d;will-change:transform;display:block}
+.card:hover{box-shadow:0 25px 50px -20px var(--glow);border-color:var(--ac)}
+.card .ic{font-size:30px;transform:translateZ(40px);display:inline-block}
+.card h3{margin:10px 0 2px;font-size:17px;transform:translateZ(25px)}.card p{margin:0;color:var(--mut);font-size:13px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--glow);color:var(--ac);margin-top:10px}
+.bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+#q{flex:1;min-width:220px;padding:13px 16px;border-radius:12px;border:1px solid var(--bd);background:var(--surf);color:var(--tx);font-size:16px}
+#q:focus{outline:2px solid var(--ac)}
+select{padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--surf);color:var(--tx)}
+.az{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.az button{width:34px;height:34px;border-radius:9px;border:1px solid var(--bd);background:var(--surf);color:var(--tx);cursor:pointer;font-weight:600}
+.az button:hover,.az button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.az button:disabled{opacity:.3;cursor:default}
+.letter{font-size:28px;font-weight:800;color:var(--ac);margin:26px 0 10px;border-bottom:1px solid var(--bd)}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.item{display:flex;justify-content:space-between;gap:8px;padding:12px 14px;background:var(--surf);border:1px solid var(--bd);border-radius:12px;transition:.2s}
+.item:hover{transform:translateX(6px) translateY(-2px);border-color:var(--ac);box-shadow:-6px 8px 0 var(--glow)}
+.item small{color:var(--mut)}
+.news{display:grid;gap:10px}.news a{padding:12px 16px;background:var(--surf);border:1px solid var(--bd);border-radius:12px}
+.news a:hover{border-color:var(--ac)}
+footer{padding:40px 5vw;border-top:1px solid var(--bd);color:var(--mut);font-size:13px;text-align:center}
+@media(max-width:820px){.hero{grid-template-columns:1fr;min-height:auto}.scene{height:340px}nav{display:none}#tg{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.rack{animation:none}}
+</style></head><body>
+<header><a class="logo" href="#top">Server<b>Verse</b> <small style="font-size:11px;font-weight:500;color:var(--mut)">by Omar Faruk</small></a>
+<nav><a href="#os">OS</a><a href="#cats">Categories</a><a href="#lib">A–Z Library</a><a href="#hist">Updates</a></nav>
+<button id="tg" aria-label="Toggle theme">◐</button></header>
+
+<div class="hero" id="top"><div>
+<h1>Build network servers, <span>in 3D clarity.</span></h1>
+<p class="lead">A browsable library of server tutorials for Ubuntu, Debian, CentOS, Fedora, Rocky, Windows Server and more — organised A to Z and by category.</p>
+<div class="btns"><a class="btn p" href="#lib">Browse A–Z Library</a><a class="btn" href="#os">Pick your OS</a></div>
+<p style="margin:18px 0 0;color:var(--mut);font-size:14px">Powered by <b style="color:var(--ac)">Omar Faruk</b></p><div class="stats"><div><b>25+</b>OS versions</div><div><b>10</b>categories</div><div><b>100+</b>topics</div></div></div>
+<div class="scene"><div class="rack" id="rack"></div></div></div>
+
+<section id="os"><h2>Choose your operating system</h2><p class="sub">Each card opens that OS’s tutorial set on Server World. Move your mouse over them.</p><div class="grid" id="osg"></div></section>
+<section id="cats"><h2>Categories</h2><p class="sub">From initial setup to containers, storage and monitoring.</p><div class="grid" id="cg"></div></section>
+
+<section id="lib"><h2>A–Z Library</h2><p class="sub">Search any topic, filter by category, or jump by letter. Choose an OS to deep-link correctly.</p>
+<div class="bar"><input id="q" type="search" placeholder="Search: nginx, kubernetes, ssh, postgres…"><select id="cat"></select><select id="osel"></select></div>
+<div class="az" id="az"></div><div id="out"></div></section>
+
+<section id="hist"><h2>Latest updates</h2><p class="sub">New OS guides added to the library.</p>
+<div class="news" id="news"></div></section>
+<footer><div style="font-size:16px;color:var(--tx);margin-bottom:8px">Powered by <b style="color:var(--ac)">Omar Faruk</b></div><div style="margin-bottom:8px">© 2026 Omar Faruk. All Rights Reserved.</div>Independent concept design. All tutorials and trademarks belong to their owners; every link opens the original <a href="https://www.server-world.info/en/" style="color:var(--ac)">Server World</a> page.</footer>
+
+<script>
+const B="https://www.server-world.info/en/note";
+const OS=[["Ubuntu 26.04 LTS","Ubuntu_26.04","🟠"],["Ubuntu 24.04 LTS","Ubuntu_24.04","🟠"],["Debian 13","Debian_13","🔴"],["CentOS Stream 10","CentOS_Stream_10","🟣"],["Rocky Linux 10","Rocky_Linux_10","🟢"],["Fedora 45","Fedora_45","🔵"],["Windows Server 2025","Windows_Server_2025","🪟"],["openSUSE Leap 16","openSUSE_Leap_16","🦎"],["FreeBSD 15","FreeBSD_15","😈"],["Proxmox VE 9","Proxmox_VE_9","📦"],["AlmaLinux 9","AlmaLinux_9","🟦"],["VMware ESXi 8","ESXi_8","☁️"]];
+const CATS=[["Install & Initial Settings","🧰","Users, network, updates"],["NTP / SSH","🔐","Time sync and secure shell"],["DNS / DHCP","🌐","BIND, Dnsmasq, Kea"],["Storage","💾","NFS, iSCSI, Ceph, GlusterFS"],["Virtualization","🖥️","KVM and VirtualBox"],["Containers","🐳","Podman, Kubernetes, Docker"],["Web Server","🕸️","Apache2 and Nginx"],["Database","🗄️","MySQL, PostgreSQL, MariaDB"],["Mail / FTP / Samba","✉️","Postfix, Dovecot, vsftpd"],["Proxy / Load Balance","⚖️","Squid and HAProxy"],["Monitoring","📈","Prometheus, Nagios, Munin"],["Security","🛡️","UFW, AppArmor, Fail2Ban"],["Development","💻","Go, Rust, Python, Node.js"],["Other Tools","🧩","Ansible, Git, VPN, Backup"]];
+// [name, p, f, category index]
+const T=[["Add a user","initial_conf",1,0],["Network Settings","initial_conf",3,0],["Update System","initial_conf",5,0],["Configure Sudo","initial_conf",7,0],["NTP Server (Chrony)","ntp",2,1],["SSH Password Authentication","ssh",1,1],["SSH Keys Pair Authentication","ssh",4,1],["SSH Port Forwarding","ssh",9,1],["SFTP only + Chroot","ssh",5,1],["DNS Server (BIND)","dns",1,2],["DNS over HTTPS","dns",10,2],["Dnsmasq","dnsmasq",1,2],["DHCP Server","dhcp",1,2],["Kea DHCP Server","kea",1,2],["NFS Server","nfs",1,3],["iSCSI Target","iscsi",1,3],["Ceph Cluster","ceph",1,3],["GlusterFS","glusterfs",1,3],["DRBD","drbd",1,3],["KVM","kvm",1,4],["KVM Live Migration","kvm",9,4],["GPU Passthrough","kvm",13,4],["VirtualBox","virtualbox",1,4],["Podman","podman",1,5],["Buildah","buildah",1,5],["Kubernetes","kubernetes",1,5],["Minikube","minikube",1,5],["MicroK8s","microk8s",1,5],["Docker","docker",1,5],["LXC","lxc",1,5],["Helm","kubernetes",7,5],["OpenLDAP","openldap",1,12],["Apache2","httpd",1,6],["Apache SSL/TLS","httpd",3,6],["WordPress","httpd2",4,6],["MediaWiki","httpd2",5,6],["Nginx","nginx",1,6],["Nginx Reverse Proxy","nginx",10,6],["Nginx Load Balancing","nginx",11,6],["MySQL 8.4","mysql8",1,7],["MySQL Replication","mysql8",5,7],["PostgreSQL","postgresql",1,7],["PostgreSQL Streaming Replication","postgresql",5,7],["MariaDB","mariadb",1,7],["Valkey","valkey",1,7],["InfluxDB","influxdb",1,7],["FTP Server (Vsftpd)","ftp",1,8],["Samba","samba",1,8],["Samba AD DC","samba",5,8],["Mail Server (Postfix)","mail",1,8],["Dovecot","mail",2,8],["Set DKIM","mail",8,8],["Squid Proxy","squid",1,9],["HAProxy","haproxy",1,9],["Prometheus","prometheus",1,10],["Grafana","grafana",0,10],["SysStat","sysstat",1,10],["Munin","munin",1,10],["Nagios","nagios",1,10],["Auditd","audit",1,11],["AppArmor","apparmor",1,11],["UFW","ufw",1,11],["Nftables","nftables",1,11],["Fail2Ban","fail2ban",0,11],["ClamAV","clamav",0,11],["Lynis Security Audit","lynis",0,11],["AIDE","aide",0,11],["OpenSCAP","openscap",0,11],["RKHunter","rkhunter",0,11],["ACL","acl",0,11],["Go","go",1,12],["Rust","rust",1,12],["Ruby","ruby",1,12],["PHP","php",1,12],["Laravel","php",2,12],["Node.js","nodejs",1,12],["Next.js","nodejs",5,12],["Python","python",1,12],["Django","python",2,12],["NVIDIA CUDA","nvidia",2,12],["Ollama","ollama",1,12],["Open WebUI","openwebui",1,12],["Stable Diffusion","stablediffusion",1,12],["Flutter","flutter",1,12],["Code Server","vscode",1,12],["Java (OpenJDK)","java",1,12],["Tomcat","java",3,12],["Jenkins","java",4,12],["GNOME Desktop","desktop",1,13],["VNC Server","desktop",8,13],["RAID 1","raid1",0,13],["Network Bonding","bonding",0,13],["iperf3 Bandwidth","iperf3",0,13],["Redmine","redmine",0,13],["Syncthing","syncthing",0,13],["Rsync","rsync",0,13],["Webmin","webmin",0,13],["Cockpit","cockpit",0,13],["Rsyslog","rsyslog",0,13],["Journald","journald",0,13],["Self-Signed SSL","ssl",1,13],["Let's Encrypt SSL","ssl",2,13],["Set Hostname","hostname",0,13],["Bacula Backup","bacula",1,13],["Elastic Stack","elasticstack",1,13],["Memcached","memcached",1,13],["RabbitMQ","rabbitmq",1,13],["Subversion","subversion",1,13],["Git","git",1,13],["Puppet","puppet",1,13],["Ansible","ansible",1,13],["Ansible AWX","ansible",9,13],["Keepalived","keepalived",1,13],["OpenVPN","openvpn",1,13],["WireGuard","wireguard",1,13],["NextCloud","nextcloud",1,13],["LVM","lvm",1,13]];
+const $=s=>document.querySelector(s),H=(el,h)=>el.innerHTML=h;
+const url=(t,os)=>`${B}?os=${os}&p=${t[1]}${t[2]?`&f=${t[2]}`:""}`;
+// rack
+H($("#rack"),[1,2,3,4].map(n=>`<div class="face f${n}">${"<div class='u'><i></i><i></i></div>".repeat(6)}</div>`).join(""));
+// OS cards + categories
+H($("#osg"),OS.map(o=>`<a class="card" target="_blank" rel="noopener" href="${B}?os=${o[1]}&p=download"><span class="ic">${o[2]}</span><h3>${o[0]}</h3><p>Full server configuration guide</p><span class="tag">Open guide</span></a>`).join(""));
+H($("#cg"),CATS.map((c,i)=>`<a class="card" href="#lib" data-c="${i}"><span class="ic">${c[1]}</span><h3>${c[0]}</h3><p>${c[2]}</p><span class="tag">${T.filter(t=>t[3]==i).length} topics</span></a>`).join(""));
+// 3D tilt
+document.addEventListener("mousemove",e=>{const c=e.target.closest(".card");document.querySelectorAll(".card").forEach(x=>{if(x!==c)x.style.transform=""});if(!c)return;const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform=`rotateX(${-y*16}deg) rotateY(${x*16}deg) translateZ(14px)`});
+// library
+H($("#cat"),`<option value="-1">All categories</option>`+CATS.map((c,i)=>`<option value="${i}">${c[0]}</option>`).join(""));
+H($("#osel"),OS.slice(0,11).map(o=>`<option value="${o[1]}">${o[0]}</option>`).join(""));
+let L="";
+function render(){const q=$("#q").value.toLowerCase(),c=+$("#cat").value,os=$("#osel").value;
+ const arr=T.filter(t=>(c<0||t[3]==c)&&t[0].toLowerCase().includes(q)).sort((a,b)=>a[0].localeCompare(b[0]));
+ const have=new Set(arr.map(t=>t[0][0].toUpperCase()));
+ H($("#az"),[..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].map(l=>`<button ${have.has(l)?"":"disabled"} class="${L==l?"on":""}" data-l="${l}">${l}</button>`).join(""));
+ const shown=L?arr.filter(t=>t[0][0].toUpperCase()==L):arr;let h="",cur="";
+ shown.forEach(t=>{const l=t[0][0].toUpperCase();if(l!=cur){cur=l;h+=(h?"</div>":"")+`<div class="letter" id="l${l}">${l}</div><div class="list">`}
+  h+=`<a class="item" target="_blank" rel="noopener" href="${url(t,os)}"><span>${t[0]}</span><small>${CATS[t[3]][1]}</small></a>`});
+ H($("#out"),shown.length?h+"</div>":`<p class="sub">No topics found.</p>`)}
+$("#q").oninput=()=>{L="";render()};$("#cat").onchange=()=>{L="";render()};$("#osel").onchange=render;
+$("#az").onclick=e=>{const b=e.target.closest("button");if(b&&!b.disabled){L=L==b.dataset.l?"":b.dataset.l;render()}};
+$("#cg").onclick=e=>{const c=e.target.closest("[data-c]");if(c){$("#cat").value=c.dataset.c;L="";$("#q").value="";render()}};
+render();
+// news
+H($("#news"),[["Nov 04, 2026","Fedora 45","Fedora_45"],["Apr 24, 2026","Ubuntu 26.04 LTS","Ubuntu_26.04"],["Dec 11, 2025","FreeBSD 15","FreeBSD_15"],["Oct 10, 2025","openSUSE Leap 16","openSUSE_Leap_16"],["Nov 08, 2024","Windows Server 2025","Windows_Server_2025"]].map(n=>`<a target="_blank" rel="noopener" href="${B}?os=${n[2]}&p=download"><small style="color:var(--mut)">${n[0]}</small> &nbsp; <b>${n[1]}</b> Configuration added</a>`).join(""));
+// theme
+const r=document.documentElement;$("#tg").onclick=()=>{const d=r.dataset.theme?r.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=d?"light":"dark"};
+</script></body></html>
